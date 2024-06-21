@@ -1,8 +1,0 @@
-*env
-__pycache__
-*.bat
-*.zip
-test*
-*copy*
-config.json
-.DS_STORE
