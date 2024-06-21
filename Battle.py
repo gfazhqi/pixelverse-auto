@@ -1,25 +1,20 @@
 import asyncio
-import websockets
 import json
+import websockets
+from colorama import Fore, Style
 from random import randint
-from colorama import Fore, Style, Back
-from time import sleep
-from time import time
+from time import sleep, time
 
 class Battle:
-    """Represents a battle session in the Pixelverse game."""
-
     def __init__(self):
-        """Initializes the Battle object with game settings."""
         self.url = 'https://api-clicker.pixelverse.xyz/api/users'
+
         with open('./config.json', 'r') as file:
             config = json.load(file)
-
+            
         self.secret = config['secret']
         self.tgId = config['tgId']
         self.initData = config['initData']
-        self.hitRate = config['hitRate']
-
         self.websocket: websockets.WebSocketClientProtocol = None
         self.battleId = ""
         self.superHit = False
@@ -27,17 +22,14 @@ class Battle:
             "defense": False,
             "attack": False
         }
-
-        self.space = "                                        "
         self.stop_event = asyncio.Event()
 
     async def sendHit(self):
-        """Continuously sends 'HIT' actions during the battle."""
         while not self.stop_event.is_set():
             if self.superHit:
-                await asyncio.sleep(0.3)
+                await asyncio.sleep(0.4)
                 continue
-
+            
             content = [
                 "HIT",
                 {
@@ -48,28 +40,24 @@ class Battle:
                 await self.websocket.send(f"42{json.dumps(content)}")
             except:
                 return
-            await asyncio.sleep(self.hitRate)
+            await asyncio.sleep(0.1)
 
     async def listenerMsg(self):
-        """Listens for and processes incoming messages from the game server."""
         while not self.stop_event.is_set():
             try:
                 data = await self.websocket.recv()
             except Exception as err:
                 self.stop_event.set()
+
                 return
-
+            
             if data.startswith('42'):
-                data = json.loads(data[2:])  # Remove prefix "42"
-
+                data = json.loads(data[2:])
+                print(data)
                 if data[0] == "HIT":
-                    print(
-                        f"{self.space}> {self.player1['name']} ({data[1]['player1']['energy']}) {Back.WHITE + Fore.BLACK}VERSUS{Style.RESET_ALL} ({data[1]['player2']['energy']}) {self.player2['name']}",
-                        end="\r", flush=True)
-
+                    print(f"\r🎈 {Fore.MAGENTA+Style.BRIGHT}[ Fight ]\t\t: {self.player1['name']} ({data[1]['player1']['energy']}) 👀 ({data[1]['player2']['energy']}) {self.player2['name']}", end="\r", flush=True)
                 elif data[0] == "SET_SUPER_HIT_PREPARE":
                     self.superHit = True
-
                 elif data[0] == "SET_SUPER_HIT_ATTACK_ZONE":
                     content = [
                         "SET_SUPER_HIT_ATTACK_ZONE",
@@ -80,7 +68,6 @@ class Battle:
                     ]
                     await self.websocket.send(f"42{json.dumps(content)}")
                     self.strike['attack'] = True
-
                 elif data[0] == "SET_SUPER_HIT_DEFEND_ZONE":
                     content = [
                         "SET_SUPER_HIT_DEFEND_ZONE",
@@ -91,66 +78,50 @@ class Battle:
                     ]
                     await self.websocket.send(f"42{json.dumps(content)}")
                     self.strike['defense'] = True
-
+                elif data[0] == "ENEMY_LEAVED":
+                    pass
                 elif data[0] == "END":
-                    result = data[1]['result']
-                    reward = data[1]['reward']
-
                     await asyncio.sleep(0.5)
                     print('')
-                    print(
-                        f"{self.space}> You {Fore.WHITE}{Back.GREEN if result == 'WIN' else Back.RED}{result}{Style.RESET_ALL} {Style.BRIGHT}{reward}{Style.RESET_ALL} coins !")
+                    if data[1]['result'] == "WIN":
+                        print(f"🍏 {Fore.MAGENTA+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
+                    else:
+                        print(f"🍎 {Fore.MAGENTA+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
 
                     await self.websocket.recv()
                     self.stop_event.set()
+                    
                     return
-
+                
                 try:
-                    if (self.strike['attack'] and not self.strike['defense']) or (
-                            self.strike['defense'] and not self.strike['attack']):
+                    if ( self.strike['attack'] and not self.strike['defense'] ) or ( self.strike['defense'] and not self.strike['attack'] ):
                         await self.websocket.recv()
                         await self.websocket.recv()
-
                     if self.strike['attack'] and self.strike['defense']:
                         await self.websocket.recv()
                         await self.websocket.send("3")
                         await self.websocket.recv()
-                        self.superHit = False
+
+                        self.superHit = False          
                 except:
                     pass
 
-    async def handleWssFreeze(self, seconds: int):
-        timeToReach = time() + seconds
-
-        while not self.stop_event.is_set():
-            if time() > timeToReach:
-                print("time is reach wss is close")
-                self.websocket.close()
-                print(f"bot wss has froze, bot is restarting ...")
-
-            await asyncio.sleep(0.001)
-
     async def connect(self):
-        """Establishes a connection to the game server and starts the battle."""
         uri = "wss://api-clicker.pixelverse.xyz/socket.io/?EIO=4&transport=websocket"
-
         async with websockets.connect(uri) as websocket:
             self.websocket = websocket
-
             data = await websocket.recv()
-
             content = {
                 "tg-id": self.tgId,
                 "secret": self.secret,
                 "initData": self.initData
             }
+
             await websocket.send(f"40{json.dumps(content)}")
-
             await websocket.recv()
+            
             data = await websocket.recv()
-
-            data = json.loads(data[2:])  # Remove prefix "42"
-
+            data = json.loads(data[2:])
             self.battleId = data[1]['battleId']
             self.player1 = {
                 "name": data[1]['player1']['username']
@@ -159,15 +130,17 @@ class Battle:
                 "name": data[1]['player2']['username']
             }
 
+            print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ Fight ]\t\t: Pertarungan Antara {Fore.RED+Style.BRIGHT}{data[1]['player1']['username']} 👀 {data[1]['player2']['username']}")
+            
             for i in range(5, 0, -1):
-                print(
-                    f"{self.space}> The fight start in {Back.RED + Fore.WHITE}{i}{Style.RESET_ALL} seconds.",
-                    end="\r", flush=True)
+                print(f"\r👻 {Fore.MAGENTA+Style.BRIGHT}[ Fight ]\t\t: Pertarungan Dimulai Dalam {i} Detik", end="\r", flush=True)
                 await asyncio.sleep(1)
+            
+            print('')
 
             listenerMsgTask = asyncio.create_task(self.listenerMsg())
             hitTask = asyncio.create_task(self.sendHit())
-            # handleWssFreeze = asyncio.create_task(self.handleWssFreeze(180))
-            
+
             await asyncio.gather(listenerMsgTask, hitTask)
 
+            print('')

@@ -5,3 +5,4 @@ __pycache__
 test*
 *copy*
 config.json
+.DS_STORE

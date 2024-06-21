@@ -1,29 +1,21 @@
+import asyncio
+import os
+import json
+import sys
 from Battle import Battle
 from Pixelverse import UserPixel
-import json
 from random import randint
-import asyncio
-from colorama import Fore, Style, init, Back
-import os
-import time
-import sys
+from colorama import Fore, Style, init 
+from time import sleep
 
 def clear():
-    """Clears the terminal screen."""
     if os.name == 'nt':
         os.system('cls')
     else:
         os.system('clear')
+clear()
 
 def split_chunk(var):
-    """Splits a string or number into chunks of 3, separated by spaces.
-
-    Args:
-        var: The string or number to be split.
-
-    Returns:
-        The formatted string with chunks of 3.
-    """
     if isinstance(var, int):
         var = str(var)
     n = 3
@@ -31,77 +23,62 @@ def split_chunk(var):
     return ' '.join([var[i:i + n] for i in range(0, len(var), n)])[::-1]
 
 async def main():
-    """Main asynchronous function to run the Pixelverse bot."""
-    
-    init()
-    user = UserPixel()
+    try:
+        init()
+        user = UserPixel()
+        users = user.getUsers()
+        stats = user.getStats()
+        winRate = (stats['wins'] / stats['battlesCount']) * 100
+        dailyRewards = user.getDailyRewards()
+        claimDailyRewards = user.claimDailyRewards()
+        claim = user.claim()
+        # pets = user.getPets()
+        
+        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Username ] {users['username']}")
+        user.claim()
+        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Claim ] {split_chunk(str(int(claim['claimedAmount'])))}")
+        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Balance ] {split_chunk(str(int(users['clicksCount'])))}")
+        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Wallet ] {users['wallet']['address']} {Fore.YELLOW+Style.BRIGHT}| {Fore.GREEN+Style.BRIGHT}[ Provider ] {users['wallet']['provider']}")
+        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User Stats ]\t: {Fore.GREEN+Style.BRIGHT}[ Wins ] {split_chunk(str(stats['wins']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.RED+Style.BRIGHT}[ Loses ] {split_chunk(str(stats['loses']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Battles Count ] {split_chunk(str(stats['battlesCount']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.WHITE+Style.BRIGHT}[ Winrate ] {winRate:.2f}%")
+        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User Stats ]\t: {Fore.GREEN+Style.BRIGHT}[ Wins Reward ] {split_chunk(str(stats['winsReward']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.RED+Style.BRIGHT}[ Loses Reward ] {split_chunk(str(stats['losesReward']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Total Earned ] {split_chunk(str(stats['winsReward'] + stats['losesReward']))}")
+        print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Total Claimed ] {split_chunk(str(dailyRewards['totalClaimed']))} Coins")
+        print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Day ] {split_chunk(str(dailyRewards['day']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Reward Amount ] {split_chunk(str(dailyRewards['rewardAmount']))} Coins")
+        print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Next Day ] {split_chunk(str(dailyRewards['nextDay']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Next Day Reward Amount ] {split_chunk(str(dailyRewards['nextDayRewardAmount']))} Coins")
+        if dailyRewards['todaysRewardAvailable'] == True:
+            print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Todays Reward Available ] Available")
+            print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Claiming ] | [ Day ] {claimDailyRewards['day']} | [ Amount ] {claimDailyRewards['amount']}\n")
+            user.claimDailyRewards()
+        else:
+            print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.RED+Style.BRIGHT}[ Todays Reward Available ] Not Available\n")
+        # for pet in pets:
+        #     print(f"🐈 {Fore.GREEN+Style.BRIGHT}[ Pets ]\t\t: [ Name ] {pet['name']} | [ Level ] {pet['userPet']['level']} | [ Level Up Price ] {pet['userPet']['levelUpPrice']} | [ Energy ] {pet['userPet']['energy']} | [ Max Energy ] {pet['userPet']['maxEnergy']}")
 
-    while True:
-        try:
-            userInfo = user.getUser()
-            stats = user.getStats()
+        with open('./config.json', 'r') as config_file:
+            config = json.load(config_file)
+        
+        battle = Battle()
+        await battle.connect()
+        del battle
 
-            message = f"""
-                                        {Back.MAGENTA}{Fore.WHITE}PixelBot{Style.RESET_ALL} | Made by {Back.MAGENTA + Fore.WHITE}S1NJED{Style.RESET_ALL}
-
-                                            Support me please :)
-                                {Fore.GREEN}$USDT{Style.RESET_ALL} (ERC20 or BEP20): {Back.WHITE + Fore.BLACK}0x0A9072E3C4Fae8e239Db12B3287eF88A3e9Da5A2{Style.RESET_ALL}
-
-                                            Logged in as {Style.BRIGHT + Fore.GREEN}{userInfo['username']}{Style.RESET_ALL}{Fore.GREEN + Style.BRIGHT}
-
-    ============================================== {Style.RESET_ALL} {Back.YELLOW + Fore.BLACK}STATS{Style.RESET_ALL} {Fore.GREEN + Style.BRIGHT} ==============================================  {Style.RESET_ALL}
-
-                                            > {Back.YELLOW + Fore.BLACK}Balance{Style.RESET_ALL}: {Style.BRIGHT}{split_chunk(str(int(userInfo['clicksCount'])))}{Style.RESET_ALL}
-
-                                            > battlesCount{Style.RESET_ALL}: {Style.BRIGHT}{split_chunk(str(stats['battlesCount']))}{Style.RESET_ALL}
-                                            > {Back.GREEN}Wins{Style.RESET_ALL}:         {Style.BRIGHT}{split_chunk(str(stats['wins']))}{Style.RESET_ALL}
-                                            > {Back.RED}Loses{Style.RESET_ALL}:        {Style.BRIGHT}{split_chunk(str(stats['loses']))}{Style.RESET_ALL}
-                                            > {Back.GREEN}Money Won{Style.RESET_ALL}:    {Style.BRIGHT}{split_chunk(str(stats['winsReward']))}{Style.RESET_ALL}
-                                            > {Back.RED}Money Lost{Style.RESET_ALL}:   {Style.BRIGHT}-{split_chunk(str(abs(stats['losesReward'])))}{Style.RESET_ALL}
-                                            > {Back.GREEN}Total earned{Style.RESET_ALL}: {Style.BRIGHT}{split_chunk(str(stats['winsReward'] - stats['losesReward']))}{Style.RESET_ALL}
-
-            """
-            print(message)
-
-            # Read config file 
-            with open('./config.json', 'r') as config_file:
-                config = json.load(config_file)
-
-
-            # Battle logic 
-            battle = Battle()
-            await battle.connect()
-            del battle
-
-            user.claim()
-            user.upgradePets(auto_upgrade=config['auto_upgrade'])  # Pass auto_upgrade choice
-
-            timeToWait = randint(5, 10)
-            print(f"{user.space}> Waiting {Back.RED + Fore.WHITE}{timeToWait}{Style.RESET_ALL} seconds.")
-            await asyncio.sleep(timeToWait)
-            clear()
-
-        except Exception as e:
-            print(f"{user.space}> Encountered an error: {type(e).__name__} - {e}")
-            print(f"{user.space}> Restarting in 5 seconds...")
-            await asyncio.sleep(5)
-            clear()
+        user.upgradePets(auto_upgrade=config['auto_upgrade'])
+        
+        clear()
+    except Exception as e:
+        print(e)
+        clear()
 
 if __name__ == '__main__':
     while True:
         try:
             asyncio.run(main())
         except KeyboardInterrupt:
-            print(f"{UserPixel().space}> Goodbye :)")
+            print(f"👋🏻 [ Dadah ]")
             sys.exit(0)
         except Exception as e:
-
             if UserPixel().isBroken():
-                print(f"{UserPixel().space}> The server seems down, restarting in 5 minutes ...")
-                time.sleep(60*5)
+                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: The server seems down, restarting")
+                sleep(randint(5, 10)*5)
             else:
-                print(f"{UserPixel().space}> Critical error: {type(e).__name__} - {e}")
-                print(f"{UserPixel().space}> Restarting in 10 seconds...")
-                time.sleep(10)
-
+                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: {type(e).__name__} - {e}")
+                sleep(randint(5, 10))
             clear()
