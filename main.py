@@ -72,17 +72,17 @@ async def main():
         clear()
 
 if __name__ == '__main__':
+    while True:
+        try:
             asyncio.run(main())
-    # while True:
-        # try:
-        # except KeyboardInterrupt:
-        #     print(f"👋🏻 [ Dadah ]")
-        #     sys.exit(0)
-        # except Exception as e:
-        #     if UserPixel().isBroken():
-        #         print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: The server seems down, restarting")
-        #         sleep(randint(5, 10)*5)
-        #     else:
-        #         print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: {type(e).__name__} - {e}")
-        #         sleep(randint(5, 10))
-        #     clear()
+        except KeyboardInterrupt:
+            print(f"👋🏻 [ Dadah ]")
+            sys.exit(0)
+        except Exception as e:
+            if UserPixel().isBroken():
+                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: The server seems down, restarting")
+                sleep(randint(5, 10)*5)
+            else:
+                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: {type(e).__name__} - {e}")
+                sleep(randint(5, 10))
+            clear()
