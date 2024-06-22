@@ -32,28 +32,22 @@ async def main():
         winRate = (stats['wins'] / stats['battlesCount']) * 100
         dailyRewards = user.getDailyRewards()
         claimDailyRewards = user.claimDailyRewards()
-        # pets = user.getPets()
-        user.claim()
         
-        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Username ] {users['username']}")
-        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Balance ] {split_chunk(str(int(users['clicksCount'])))} Coins")
-        print('')
-        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User Stats ]\t: {Fore.GREEN+Style.BRIGHT}[ Wins ] {split_chunk(str(stats['wins']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Loses ] {split_chunk(str(stats['loses']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.RED+Style.BRIGHT}[ Battles Count ] {split_chunk(str(stats['battlesCount']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.WHITE+Style.BRIGHT}[ Winrate ] {winRate:.2f}%")
-        print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User Stats ]\t: {Fore.GREEN+Style.BRIGHT}[ Wins Reward ] {split_chunk(str(stats['winsReward']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Loses Reward ] {split_chunk(str(stats['losesReward']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.RED+Style.BRIGHT}[ Total Earned ] {split_chunk(str(stats['winsReward'] + stats['losesReward']))}")
-        print('')
-        print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.BLUE+Style.BRIGHT}[ Total Claimed ] {split_chunk(str(dailyRewards['totalClaimed']))} Coins")
-        print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.BLUE+Style.BRIGHT}[ Day ] {split_chunk(str(dailyRewards['day']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.GREEN+Style.BRIGHT}[ Reward Amount ] {split_chunk(str(dailyRewards['rewardAmount']))} Coins")
-        print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.BLUE+Style.BRIGHT}[ Next Day ] {split_chunk(str(dailyRewards['nextDay']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.GREEN+Style.BRIGHT}[ Next Day Reward Amount ] {split_chunk(str(dailyRewards['nextDayRewardAmount']))} Coins")
+        print(f"👻 {Fore.CYAN+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Username ] {users['username']}")
+        print(f"👻 {Fore.CYAN+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Balance ] {split_chunk(str(int(users['clicksCount'])))} Coins")
+        print(f"👻 {Fore.YELLOW+Style.BRIGHT}[ User Stats ]\t: {Fore.GREEN+Style.BRIGHT}[ Wins ] {split_chunk(str(stats['wins']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Loses ] {split_chunk(str(stats['loses']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.RED+Style.BRIGHT}[ Battles Count ] {split_chunk(str(stats['battlesCount']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.WHITE+Style.BRIGHT}[ Winrate ] {winRate:.2f}%")
+        print(f"👻 {Fore.YELLOW+Style.BRIGHT}[ User Stats ]\t: {Fore.GREEN+Style.BRIGHT}[ Wins Reward ] {split_chunk(str(stats['winsReward']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.BLUE+Style.BRIGHT}[ Loses Reward ] {split_chunk(str(stats['losesReward']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.RED+Style.BRIGHT}[ Total Earned ] {split_chunk(str(stats['winsReward'] + stats['losesReward']))}")
+        user.claim()
+        print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.BLUE+Style.BRIGHT}[ Total Claimed ] {split_chunk(str(dailyRewards['totalClaimed']))} Coins")
+        print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.BLUE+Style.BRIGHT}[ Day ] {split_chunk(str(dailyRewards['day']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.GREEN+Style.BRIGHT}[ Reward Amount ] {split_chunk(str(dailyRewards['rewardAmount']))} Coins")
+        print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.BLUE+Style.BRIGHT}[ Next Day ] {split_chunk(str(dailyRewards['nextDay']))} {Fore.YELLOW+Style.BRIGHT}| {Fore.GREEN+Style.BRIGHT}[ Next Day Reward Amount ] {split_chunk(str(dailyRewards['nextDayRewardAmount']))} Coins")
         if dailyRewards['todaysRewardAvailable'] == True:
-            print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Todays Reward Available ] Available")
-            print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Claiming ] | [ Day ] {claimDailyRewards['day']} | [ Amount ] {claimDailyRewards['amount']}")
+            print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Todays Reward Available ] Available")
+            print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.GREEN+Style.BRIGHT}[ Claiming ] | [ Day ] {claimDailyRewards['day']} | [ Amount ] {claimDailyRewards['amount']}")
             user.claimDailyRewards()
         else:
-            print(f"💰 {Fore.CYAN+Style.BRIGHT}[ Daily Reward ]\t: {Fore.RED+Style.BRIGHT}[ Todays Reward Available ] Not Available")
-        
-        # for pet in pets:
-        #     print(f"🐈 {Fore.GREEN+Style.BRIGHT}[ Pets ]\t\t: [ Name ] {pet['name']} | [ Level ] {pet['userPet']['level']} | [ Level Up Price ] {pet['userPet']['levelUpPrice']} | [ Energy ] {pet['userPet']['energy']} | [ Max Energy ] {pet['userPet']['maxEnergy']}")
-        
+            print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.RED+Style.BRIGHT}[ Todays Reward Available ] Not Available")
+
         print('')
 
         with open('./config.json', 'r') as config_file:
@@ -65,24 +59,21 @@ async def main():
         print('')
 
         user.upgradePets(auto_upgrade=config['auto_upgrade'])
-        
-        clear()
     except Exception as e:
         print(e)
-        clear()
 
 if __name__ == '__main__':
     while True:
         try:
             asyncio.run(main())
-        except KeyboardInterrupt:
-            print(f"👋🏻 [ Dadah ]")
+        except KeyboardInterrupt as e:
+            print(f"👋🏻 [ Error ]\t: {e}")
             sys.exit(0)
         except Exception as e:
             if UserPixel().isBroken():
-                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: The server seems down, restarting")
+                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Error ]\t: {e}")
                 sleep(randint(5, 10)*5)
             else:
-                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Bot ]\t\t: {type(e).__name__} - {e}")
+                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Error ]\t: {type(e).__name__} {e}")
                 sleep(randint(5, 10))
-            clear()
+        clear()
