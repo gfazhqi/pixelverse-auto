@@ -1,6 +1,6 @@
 {
-    "secret": "cc9bc22680075abb78225ff40df748439522aa1b55c461a2dac21193d86ce933",
-    "tgId": "6094625904",
-    "initData": "query_id=AAFwnERrAgAAAHCcRGuVW5gE&user=%7B%22id%22%3A6094625904%2C%22first_name%22%3A%22Shyzago%22%2C%22last_name%22%3A%22Nakamoto%22%2C%22username%22%3A%22shyzg%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1718991423&hash=5b514534230161072e094b94368e645287d5a90a7812cd1eb8ef9ea893bd204f",
+    "secret": "",
+    "tgId": "",
+    "initData": "",
     "auto_upgrade": true
 }
