@@ -33,8 +33,7 @@ async def main():
         dailyRewards = user.getDailyRewards()
         claimDailyRewards = user.claimDailyRewards()
         # pets = user.getPets()
-        claim = user.claim()
-        print(json.dumps(claim))
+        user.claim()
         
         print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Username ] {users['username']}")
         print(f"👻 {Fore.MAGENTA+Style.BRIGHT}[ User ]\t\t: {Fore.RED+Style.BRIGHT}[ Balance ] {split_chunk(str(int(users['clicksCount'])))} Coins")
