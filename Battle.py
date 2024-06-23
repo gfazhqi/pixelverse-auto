@@ -13,10 +13,13 @@ def split_chunk(var):
     return ' '.join([var[i:i + n] for i in range(0, len(var), n)])[::-1]
 
 class Battle:
+    wins = 0
+    loses = 0
+
     def __init__(self):
         with open('config.json', 'r') as file:
             config = json.load(file)
-            
+        
         self.secret = config['secret']
         self.tgId = config['tgId']
         self.initData = config['initData']
@@ -53,9 +56,8 @@ class Battle:
                 data = await self.websocket.recv()
             except Exception as err:
                 self.stop_event.set()
-
                 return
-            
+
             if data.startswith('42'):
                 data = json.loads(data[2:])
                 print(data)
@@ -84,19 +86,18 @@ class Battle:
                     await self.websocket.send(f"42{json.dumps(content)}")
                     self.strike['defense'] = True
                 elif data[0] == "ENEMY_LEAVED":
-                    pass
+                    return
                 elif data[0] == "END":
-                    await asyncio.sleep(0.5)
                     if data[1]['result'] == "WIN":
+                        Battle.wins += 1
                         print(f"🍏 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
                     else:
+                        Battle.loses += 1
                         print(f"🍎 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
-
+                    await asyncio.sleep(0.5)
                     await self.websocket.recv()
                     self.stop_event.set()
-                    
                     return
-                
                 try:
                     if ( self.strike['attack'] and not self.strike['defense'] ) or ( self.strike['defense'] and not self.strike['attack'] ):
                         await self.websocket.recv()

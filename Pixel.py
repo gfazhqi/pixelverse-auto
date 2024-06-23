@@ -1,7 +1,6 @@
 import json
 import requests
 from colorama import Fore, Style
-from datetime import datetime, timezone
 
 def split_chunk(var):
     if isinstance(var, int):
@@ -10,7 +9,7 @@ def split_chunk(var):
     var = var[::-1]
     return ' '.join([var[i:i + n] for i in range(0, len(var), n)])[::-1]
 
-class UserPixel:
+class Pixel:
     def __init__(self):
         with open('config.json', 'r') as file:
             self.config = json.load(file)
@@ -39,9 +38,9 @@ class UserPixel:
             req.raise_for_status()
             return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error getUsers() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ JSONDecodeError getUsers() ]\t: {e}")
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error getUsers() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException getUsers() ]\t: {e}")
 
     def getStats(self):
         url = "https://api-clicker.pixelverse.xyz/api/battles/my/stats"
@@ -50,20 +49,20 @@ class UserPixel:
             req.raise_for_status()
             return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error getStats() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ JSONDecodeError getStats() ]\t: {e}")
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error getStats() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException getStats() ]\t: {e}")
 
     def upgrade(self, petId: str):
         url = f"https://api-clicker.pixelverse.xyz/api/pets/user-pets/{petId}/level-up"
         try:
-            req = requests.get(url, headers=self.headers)
+            req = requests.post(url, headers=self.headers)
             req.raise_for_status()
             return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error upgrade() ]\t: {e}")
+            return
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error upgrade() ]\t: {e}")
+            return
 
     def upgradePets(self, auto_upgrade: bool):
         url = "https://api-clicker.pixelverse.xyz/api/pets"
@@ -74,35 +73,30 @@ class UserPixel:
             for pet in pets:
                 if auto_upgrade:
                     if pet['userPet']['isMaxLevel'] == True:
-                        print(f"🐈 {Fore.MAGENTA+Style.BRIGHT}[ Pets ]\t\t: [ {pet['name']} ] Is Max Level")
+                        print(f"🐈 {Fore.CYAN+Style.BRIGHT}[ Pets ]\t\t: [ {pet['name']} ] Is Max Level")
                     else:
                         if data['clicksCount'] >= pet['userPet']['levelUpPrice']:
                             self.upgrade(pet['userPet']['id'])
-                            print(f"🐈 {Fore.MAGENTA+Style.BRIGHT}[ Pets ]\t\t: [ {pet['name']} ] Success Level Up")
+                            print(f"🐈 {Fore.CYAN+Style.BRIGHT}[ Pets ]\t\t: [ {pet['name']} ] Success Level Up")
                         else:
-                            print(f"🐈 {Fore.MAGENTA+Style.BRIGHT}[ Pets ]\t\t: Not Enough Coins To Upgrade [ {pet['name']} ] {(split_chunk(str(int(pet['userPet']['levelUpPrice'] - data['clicksCount']))))} Coins Remaining")
+                            print(f"🐈 {Fore.CYAN+Style.BRIGHT}[ Pets ]\t\t: Not Enough Coins To Upgrade [ {pet['name']} ] {(split_chunk(str(int(pet['userPet']['levelUpPrice'] - data['clicksCount']))))} Coins Remaining")
                 else:
-                    print(f"🐈 {Fore.MAGENTA+Style.BRIGHT}[ Pets ]\t\t: [ {pet['name']} ] Can Upgrade")
+                    print(f"🐈 {Fore.CYAN+Style.BRIGHT}[ Pets ]\t\t: [ {pet['name']} ] Can Upgrade")
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error upgradePets() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ JSONDecodeError upgradePets() ]\t: {e}")
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error upgradePets() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException upgradePets() ]\t: {e}")
 
     def claim(self):
         url = "https://api-clicker.pixelverse.xyz/api/mining/claim"
         try:
             req = requests.post(url, headers=self.headers)
             req.raise_for_status()
-            data = req.json()
-            nextFullRestorationDate = datetime.strptime(data['nextFullRestorationDate'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
-            print(f"🪙 {Fore.CYAN+Style.BRIGHT}[ Claim ]\t\t: {Fore.YELLOW+Style.BRIGHT}[ Max Available ] {split_chunk(str(int(data['maxAvailable'])))}")
-            print(f"🪙 {Fore.CYAN+Style.BRIGHT}[ Claim ]\t\t: {Fore.YELLOW+Style.BRIGHT}[ Minimum Amount For Claim ] {split_chunk(str(int(data['minAmountForClaim'])))}")
-            print(f"🪙 {Fore.CYAN+Style.BRIGHT}[ Claim ]\t\t: {Fore.YELLOW+Style.BRIGHT}[ Next Full Restoration Date ] {nextFullRestorationDate}")
-            print(f"🪙 {Fore.CYAN+Style.BRIGHT}[ Claim ]\t\t: {Fore.YELLOW+Style.BRIGHT}[ Claimed Amount ] {split_chunk(str(int(data['claimedAmount'])))}")
+            return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error claim() ]\t: {e}")
+            return
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error claim() ]\t: {e}")
+            return
 
     def getDailyRewards(self):
         url = "https://api-clicker.pixelverse.xyz/api/daily-rewards"
@@ -111,9 +105,9 @@ class UserPixel:
             req.raise_for_status()
             return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error getDailyRewards() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ JSONDecodeError getDailyRewards() ]\t: {e}")
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error getDailyRewards() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException getDailyRewards() ]\t: {e}")
 
     def claimDailyRewards(self):
         url = "https://api-clicker.pixelverse.xyz/api/daily-rewards/claim"
@@ -122,9 +116,9 @@ class UserPixel:
             req.raise_for_status()
             return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error claimDailyRewards() ]\t: {e}")
+            return
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error claimDailyRewards() ]\t: {e}")
+            return
 
     def isBroken(self):
         url = "https://api-clicker.pixelverse.xyz/api/tasks/my"
@@ -133,6 +127,6 @@ class UserPixel:
             req.raise_for_status()
             return req.json()
         except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error isBroken() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ JSONDecodeError isBroken() ]\t: {e}")
         except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error isBroken() ]\t: {e}")
+            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException isBroken() ]\t: {e}")
