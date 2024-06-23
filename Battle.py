@@ -14,9 +14,7 @@ def split_chunk(var):
 
 class Battle:
     def __init__(self):
-        self.url = 'https://api-clicker.pixelverse.xyz/api/users'
-
-        with open('./config.json', 'r') as file:
+        with open('config.json', 'r') as file:
             config = json.load(file)
             
         self.secret = config['secret']

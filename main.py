@@ -60,20 +60,20 @@ async def main():
 
         user.upgradePets(auto_upgrade=config['auto_upgrade'])
     except Exception as e:
-        print(e)
+        print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error ]\t: {e}")
 
 if __name__ == '__main__':
     while True:
         try:
             asyncio.run(main())
-        except KeyboardInterrupt as e:
-            print(f"👋🏻 [ Error ]\t: {e}")
+        except KeyboardInterrupt:
+            print(f"👋🏻 {Fore.RED+Style.BRIGHT}[ Dadah ]")
             sys.exit(0)
         except Exception as e:
             if UserPixel().isBroken():
-                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Error ]\t: {e}")
+                print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error ]\t: {e}")
                 sleep(randint(5, 10)*5)
             else:
-                print(f"🤖 {Fore.RED+Style.BRIGHT}[ Error ]\t: {type(e).__name__} {e}")
+                print(f"🍓 {Fore.RED+Style.BRIGHT}[ Error ]\t: {type(e).__name__} {e}")
                 sleep(randint(5, 10))
         clear()
