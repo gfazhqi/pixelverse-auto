@@ -48,8 +48,6 @@ async def main():
         else:
             print(f"🗓️ {Fore.MAGENTA+Style.BRIGHT}[ Daily Reward ]\t: {Fore.RED+Style.BRIGHT}[ Todays Reward Available ] Not Available")
 
-        print('')
-
         with open('./config.json', 'r') as config_file:
             config = json.load(config_file)
         
