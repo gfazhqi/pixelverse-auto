@@ -3,7 +3,6 @@ import json
 import websockets
 from colorama import Fore, Style
 from random import randint
-from time import sleep
 
 def split_chunk(var):
     if isinstance(var, int):
@@ -17,6 +16,7 @@ class Battle:
     loses = 0
     rewardWins = 0
     rewardLoses = 0
+    winRate = 0
 
     def __init__(self):
         with open('config.json', 'r') as file:
@@ -56,7 +56,7 @@ class Battle:
         while not self.stop_event.is_set():
             try:
                 data = await self.websocket.recv()
-            except Exception as err:
+            except Exception:
                 self.stop_event.set()
                 return
 
@@ -93,11 +93,12 @@ class Battle:
                     if data[1]['result'] == "WIN":
                         Battle.wins += 1
                         Battle.rewardWins += data[1]['reward']
-                        print(f"🍏 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
+                        print(f"🍏 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {split_chunk(str(data[1]['reward']))} Coins")
                     else:
                         Battle.loses += 1
                         Battle.rewardLoses -= data[1]['reward']
-                        print(f"🍎 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
+                        print(f"🍎 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] -{split_chunk(str(data[1]['reward']))} Coins")
+                    Battle.winRate = (Battle.wins / (Battle.wins + Battle.loses)) * 100
                     await asyncio.sleep(0.5)
                     await self.websocket.recv()
                     self.stop_event.set()
