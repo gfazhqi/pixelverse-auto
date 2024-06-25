@@ -1,6 +1,7 @@
 {
+    "initData": "",
     "secret": "",
     "tgId": "",
-    "initData": "",
-    "auto_upgrade": true
+    "auto_upgrade_pets": true,
+    "auto_daily_rewards": true
 }

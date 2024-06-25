@@ -15,6 +15,8 @@ def split_chunk(var):
 class Battle:
     wins = 0
     loses = 0
+    rewardWins = 0
+    rewardLoses = 0
 
     def __init__(self):
         with open('config.json', 'r') as file:
@@ -90,9 +92,11 @@ class Battle:
                 elif data[0] == "END":
                     if data[1]['result'] == "WIN":
                         Battle.wins += 1
+                        Battle.rewardWins += data[1]['reward']
                         print(f"🍏 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
                     else:
                         Battle.loses += 1
+                        Battle.rewardLoses -= data[1]['reward']
                         print(f"🍎 {Fore.CYAN+Style.BRIGHT}[ Fight ]\t\t: [ Result ] {data[1]['result']} | [ Reward ] {data[1]['reward']} Coins")
                     await asyncio.sleep(0.5)
                     await self.websocket.recv()
@@ -107,7 +111,7 @@ class Battle:
                         await self.websocket.send("3")
                         await self.websocket.recv()
 
-                        self.superHit = False          
+                        self.superHit = False
                 except:
                     pass
 
