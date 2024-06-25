@@ -23,7 +23,7 @@ def split_chunk(var):
     return ' '.join([var[i:i + n] for i in range(0, len(var), n)])[::-1]
 
 async def main():
-    init(autoreset=True)
+    init()
     user = Pixel()
     users = user.getUsers()
     stats = user.getStats()
