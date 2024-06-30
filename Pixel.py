@@ -43,17 +43,6 @@ class Pixel:
         except requests.RequestException as e:
             return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException getUsers() ]\t: {e}")
 
-    def getStats(self):
-        url = "https://api-clicker.pixelverse.xyz/api/battles/my/stats"
-        try:
-            req = requests.get(url, headers=self.headers)
-            req.raise_for_status()
-            return req.json()
-        except json.JSONDecodeError as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ JSONDecodeError getStats() ]\t: {e}")
-        except requests.RequestException as e:
-            return print(f"🍓 {Fore.RED+Style.BRIGHT}[ RequestException getStats() ]\t: {e}")
-
     def upgrade(self, petId: str):
         url = f"https://api-clicker.pixelverse.xyz/api/pets/user-pets/{petId}/level-up"
         try:
