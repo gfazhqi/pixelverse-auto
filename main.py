@@ -6,8 +6,6 @@ from Battle import Battle
 from Pixel import Pixel
 from colorama import Fore, Style, init
 
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
 
 def clear():
     if os.name == 'nt':
@@ -23,6 +21,9 @@ def split_chunk(var):
     return ' '.join([var[i:i + n] for i in range(0, len(var), n)])[::-1]
 
 async def main():
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
+
     init()
     battle = Battle()
     user = Pixel()

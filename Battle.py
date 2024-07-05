@@ -91,7 +91,9 @@ class Battle:
                     await self.websocket.send(f"42{json.dumps(content)}")
                     self.strike['defense'] = True
                 elif data[0] == "ENEMY_LEAVED":
-                    pass
+                    await self.websocket.recv()
+                    self.stop_event.set()
+                    return
                 elif data[0] == "END":
                     if data[1]['result'] == "WIN":
                         Battle.wins += 1
@@ -104,6 +106,7 @@ class Battle:
                     await self.websocket.recv()
                     self.stop_event.set()
                     return
+
                 try:
                     if ( self.strike['attack'] and not self.strike['defense'] ) or ( self.strike['defense'] and not self.strike['attack'] ):
                         await self.websocket.recv()
