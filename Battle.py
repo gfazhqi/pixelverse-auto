@@ -4,6 +4,7 @@ import websockets
 from colorama import Fore, Style
 from random import randint
 
+
 def split_chunk(var):
     if isinstance(var, int):
         var = str(var)
@@ -14,9 +15,9 @@ def split_chunk(var):
 class Battle:
     wins = 0
     loses = 0
-    rewardWins = 0
-    rewardLoses = 0
-    winRate = 0
+    reward_wins = 0
+    reward_loses = 0
+    winrate = 0
 
     def __init__(self):
         with open('config.json', 'r') as file:
@@ -95,14 +96,15 @@ class Battle:
                     self.stop_event.set()
                     return
                 elif data[0] == "END":
+                    await asyncio.sleep(3)
                     if data[1]['result'] == "WIN":
                         Battle.wins += 1
-                        Battle.rewardWins += data[1]['reward']
+                        Battle.reward_wins += data[1]['reward']
                     else:
                         Battle.loses += 1
-                        Battle.rewardLoses -= data[1]['reward']
-                    Battle.winRate = (Battle.wins / (Battle.wins + Battle.loses)) * 100
-                    
+                        Battle.reward_loses -= data[1]['reward']
+                    Battle.winrate = (Battle.wins / (Battle.wins + Battle.loses)) * 100
+
                     await self.websocket.recv()
                     self.stop_event.set()
                     return
@@ -132,7 +134,7 @@ class Battle:
 
             await websocket.send(f"40{json.dumps(content)}")
             await websocket.recv()
-            
+
             data = await websocket.recv()
             data = json.loads(data[2:])
             self.battleId = data[1]['battleId']
@@ -165,9 +167,9 @@ class Battle:
             for i in range(5, 0, -1):
                 print(f"\r⏰ {Fore.YELLOW+Style.BRIGHT}[ Pertarungan Dimulai Dalam {i} Detik ]", end="\r", flush=True)
                 await asyncio.sleep(1)
-            
+
             print('')
-            
+
             listenerMsgTask = asyncio.create_task(self.listenerMsg())
             hitTask = asyncio.create_task(self.sendHit())
 

@@ -27,24 +27,25 @@ async def main():
     init()
     battle = Battle()
     user = Pixel()
-    users = user.getUsers()
+    users = user.get_users()
 
-    print(f"👻 {Fore.CYAN+Style.BRIGHT}[ {users.get('username', 'Unknown')} ]")
-    print(f"💰 {Fore.YELLOW+Style.BRIGHT}[ {split_chunk(str(int(users['clicksCount'])))} Coins ]")
+    print(f"👻 {Fore.CYAN+Style.BRIGHT}[ {users.get('username', 'Unknown')} ]"
+          f"{Fore.WHITE+Style.BRIGHT} | "
+          f"💰 {Fore.YELLOW+Style.BRIGHT}[ {split_chunk(str(int(users['clicksCount'])))} Coins ]")
     print(f"🍏 {Fore.GREEN+Style.BRIGHT}[ {split_chunk(str(int(battle.wins)))} Wins ]"
           f"{Fore.WHITE+Style.BRIGHT} | "
           f"🍎 {Fore.RED+Style.BRIGHT}[ {split_chunk(str(int(battle.loses)))} Loses ]"
           f"{Fore.WHITE+Style.BRIGHT} | "
-          f"⚽️ {Fore.YELLOW+Style.BRIGHT}[ Winrate ] {battle.winRate:.2f}%")
-    print(f"🍏 {Fore.GREEN+Style.BRIGHT}[ {split_chunk(str(int(battle.rewardWins)))} Wins Reward ]"
+          f"⚽️ {Fore.YELLOW+Style.BRIGHT}[ winrate ] {battle.winrate:.2f}%")
+    print(f"🍏 {Fore.GREEN+Style.BRIGHT}[ {split_chunk(str(int(battle.reward_wins)))} Wins Reward ]"
           f"{Fore.WHITE+Style.BRIGHT} | "
-          f"🍎 {Fore.RED+Style.BRIGHT}[ {split_chunk(str(int(battle.rewardLoses)))} Loses Reward ]"
+          f"🍎 {Fore.RED+Style.BRIGHT}[ {split_chunk(str(int(battle.reward_loses)))} Loses Reward ]"
           f"{Fore.WHITE+Style.BRIGHT} | "
-          f"💰 {Fore.YELLOW+Style.BRIGHT}[ {split_chunk(str(int(battle.rewardWins + battle.rewardLoses)))} Total Earned ]")
+          f"💰 {Fore.YELLOW+Style.BRIGHT}[ {split_chunk(str(int(battle.reward_wins + battle.reward_loses)))} Total Earned ]")
     user.claim()
-    user.dailyRewards(auto_daily_rewards=config['auto_daily_rewards'])
-    user.upgradePets(auto_upgrade_pets=config['auto_upgrade_pets'])
-    
+    user.daily_rewards(auto_daily_rewards=config['auto_daily_rewards'])
+    user.upgrade_pets(auto_upgrade_pets=config['auto_upgrade_pets'])
+
     await battle.connect()
     del battle
 
