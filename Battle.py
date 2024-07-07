@@ -2,7 +2,7 @@ import asyncio
 import json
 import websockets
 from colorama import Fore, Style
-from random import randint
+from random import randint, uniform
 
 
 def split_chunk(var):
@@ -38,7 +38,7 @@ class Battle:
     async def sendHit(self):
         while not self.stop_event.is_set():
             if self.superHit:
-                await asyncio.sleep(0.4)
+                await asyncio.sleep(0.3)
                 continue
 
             content = [
@@ -50,9 +50,9 @@ class Battle:
 
             try:
                 await self.websocket.send(f"42{json.dumps(content)}")
+                await asyncio.sleep(uniform(0.11, 0.115))
             except:
                 return
-            await asyncio.sleep(0.11)
 
     async def listenerMsg(self):
         while not self.stop_event.is_set():
@@ -96,7 +96,6 @@ class Battle:
                     self.stop_event.set()
                     return
                 elif data[0] == "END":
-                    await asyncio.sleep(3)
                     if data[1]['result'] == "WIN":
                         Battle.wins += 1
                         Battle.reward_wins += data[1]['reward']
@@ -104,7 +103,6 @@ class Battle:
                         Battle.loses += 1
                         Battle.reward_loses -= data[1]['reward']
                     Battle.winrate = (Battle.wins / (Battle.wins + Battle.loses)) * 100
-
                     await self.websocket.recv()
                     self.stop_event.set()
                     return
@@ -163,12 +161,6 @@ class Battle:
                   f"{Fore.CYAN+Style.BRIGHT}[ Energy {split_chunk(str(int(data[1]['player2']['energy'])))} ]"
                   f"{Fore.WHITE+Style.BRIGHT} | "
                   f"{Fore.MAGENTA+Style.BRIGHT}[ Damage {split_chunk(str(int(data[1]['player2']['damage'])))} ]")
-
-            for i in range(5, 0, -1):
-                print(f"\r⏰ {Fore.YELLOW+Style.BRIGHT}[ Pertarungan Dimulai Dalam {i} Detik ]", end="\r", flush=True)
-                await asyncio.sleep(1)
-
-            print('')
 
             listenerMsgTask = asyncio.create_task(self.listenerMsg())
             hitTask = asyncio.create_task(self.sendHit())
