@@ -4,6 +4,7 @@ import json
 import sys
 from Battle import Battle
 from Pixel import Pixel
+from datetime import datetime
 from colorama import Fore, Style, init
 
 
@@ -45,6 +46,10 @@ async def main():
     user.claim()
     user.daily_rewards(auto_daily_rewards=config['auto_daily_rewards'])
     user.upgrade_pets(auto_upgrade_pets=config['auto_upgrade_pets'])
+    
+    current_date = datetime.now()
+    if current_date.hour >= 23:
+        await asyncio.sleep(3600)
 
     await battle.connect()
     del battle
